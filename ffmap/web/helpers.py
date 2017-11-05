@@ -19,14 +19,14 @@ allowed_filters = (
 	'status',
 	'hood',
 	'community',
-	'user.nickname',
-	'hardware.name',
-	'software.firmware',
-	'netifs.mac',
-	'netifs.name',
+	'nickname',
+	'hardware',
+	'firmware',
+	'mac',
+	'netif',
 	'netmon_id',
 	'hostname',
-	'system.contact',
+	'contact',
 )
 def parse_router_list_search_query(args):
 	query_usr = bson.SON()
@@ -45,17 +45,17 @@ def parse_router_list_search_query(args):
 			query[key] = {"$exists": True}
 		elif value == "EXISTS_NOT":
 			query[key] = {"$exists": False}
-		elif key == 'netifs.mac':
+		elif key == 'mac':
 			query[key] = value.lower()
-		elif key == 'netifs.name':
+		elif key == 'netif':
 			query[key] = {"$regex": value.replace('.', '\.'), "$options": 'i'}
 		elif key == 'hostname':
 			query[key] = {"$regex": value.replace('.', '\.'), "$options": 'i'}
-		elif key == 'hardware.name':
+		elif key == 'hardware':
 			query[key] = {"$regex": value.replace('.', '\.').replace('_', ' '), "$options": 'i'}
 		elif key == 'netmon_id':
 			query[key] = int(value)
-		elif key == 'system.contact':
+		elif key == 'contact':
 			if not '\.' in value:
 				value = re.escape(value)
 			query[key] = {"$regex": value, "$options": 'i'}
@@ -70,9 +70,12 @@ def send_email(recipient, subject, content, sender="FFF Monitoring <noreply@moni
 	msg['Subject'] = subject
 	msg['From'] = sender
 	msg['To'] = recipient
-	s = smtplib.SMTP('localhost')
-	s.send_message(msg)
-	s.quit()
+	logf = open("/data/fff/mail.txt", "a")
+	logf.write("{}\n\n".format(msg))
+	logf.close()
+	#s = smtplib.SMTP('localhost')
+	#s.send_message(msg)
+	#s.quit()
 
 def is_authorized(owner, session):
 	if ("user" in session) and (owner == session.get("user")):

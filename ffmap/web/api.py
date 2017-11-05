@@ -2,6 +2,7 @@
 
 from ffmap.routertools import *
 from ffmap.maptools import *
+from ffmap.mysqltools import FreifunkMySQL
 from ffmap.dbtools import FreifunkDB
 from ffmap.stattools import record_global_stats
 
@@ -19,18 +20,36 @@ db = FreifunkDB().handle()
 # map ajax
 @api.route('/get_nearest_router')
 def get_nearest_router():
-	res_router = db.routers.find_one(
-		{"position": {"$near": {"$geometry": {
-			"type": "Point",
-			"coordinates": [float(request.args.get("lng")), float(request.args.get("lat"))]
-		}}}},
-		{
-			"hostname": 1,
-			"neighbours": 1,
-			"position": 1,
-			"description": 1,
-		}
-	)
+	lng = float(request.args.get("lng"))
+	lat = float(request.args.get("lat"))
+	
+	mysql = FreifunkMySQL()
+	res_router = mysql.findone("""
+		SELECT id, hostname, lat, lng, description,
+			( acos(  cos( radians(%s) )
+						  * cos( radians( lat ) )
+						  * cos( radians( lng ) - radians(%s) )
+						  + sin( radians(%s) ) * sin( radians( lat ) )
+						 )
+			) AS distance
+		FROM
+			router
+		WHERE lat IS NOT NULL AND lng IS NOT NULL
+		ORDER BY
+			distance ASC
+		LIMIT 1
+	""",(lat,lng,lat,))
+	
+	res_router["neighbours"] = mysql.fetchall("""
+		SELECT nb.mac, nb.quality, nb.net_if, r.hostname, r.id
+		FROM router_neighbor AS nb
+		INNER JOIN (
+			SELECT router, mac FROM router_netif GROUP BY mac, router
+			) AS net ON nb.mac = net.mac
+		INNER JOIN router as r ON net.router = r.id
+		WHERE nb.router = %s""",(res_router["id"],))
+	mysql.close()
+	
 	r = make_response(bson2json(res_router))
 	r.mimetype = 'application/json'
 	return r
@@ -46,31 +65,51 @@ def get_router_by_mac(mac):
 
 @api.route('/alfred', methods=['GET', 'POST'])
 def alfred():
-	#set_alfred_data = {65: "hallo", 66: "welt"}
-	set_alfred_data = {}
-	r = make_response(json.dumps(set_alfred_data))
-	#import cProfile, pstats, io
-	#pr = cProfile.Profile()
-	#pr.enable()
-	if request.method == 'POST':
-		alfred_data = request.get_json()
-		if alfred_data:
-			# load router status xml data
-			for mac, xml in alfred_data.get("64", {}).items():
-				import_nodewatcher_xml(mac, xml)
-			r.headers['X-API-STATUS'] = "ALFRED data imported"
-		detect_offline_routers()
-		delete_orphaned_routers()
-		record_global_stats()
-		update_mapnik_csv()
-	#pr.disable()
-	#s = io.StringIO()
-	#sortby = 'cumulative'
-	#ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-	#ps.print_stats()
-	#print(s.getvalue())
-	r.mimetype = 'application/json'
-	return r
+	try:
+		mysql = FreifunkMySQL()
+		#cur = mysql.cursor()
+		#set_alfred_data = {65: "hallo", 66: "welt"}
+		set_alfred_data = {}
+		r = make_response(json.dumps(set_alfred_data))
+		#import cProfile, pstats, io
+		#pr = cProfile.Profile()
+		#pr.enable()
+		if request.method == 'POST':
+			alfred_data = request.get_json()
+			#file = open("/data/fff/testsqlz.txt","w") 
+			#file.write("a")
+			#file.write(json.dumps(alfred_data))
+			#file.close() 
+			
+			if alfred_data:
+				# load router status xml data
+				for mac, xml in alfred_data.get("64", {}).items():
+					#file = open("/data/fff/testsqly.txt","w") 
+					#file.write("a")
+					#file.write(xml)
+					#file.close() 
+					import_nodewatcher_xml(mysql, mac, xml)
+					mysql.commit()
+				r.headers['X-API-STATUS'] = "ALFRED data imported"
+			detect_offline_routers(mysql)
+			delete_orphaned_routers(mysql)
+			delete_old_stats(mysql)
+			record_global_stats(mysql)
+			update_mapnik_csv(mysql)
+			mysql.close()
+		#pr.disable()
+		#s = io.StringIO()
+		#sortby = 'cumulative'
+		#ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+		#ps.print_stats()
+		#print(s.getvalue())
+		r.mimetype = 'application/json'
+		return r
+	except Exception as e:     # most generic exception you can catch
+		logf = open("/data/fff/fail00.txt", "a")
+		logf.write("{}\n".format(e))
+		#logf.write("X{}X\n".format(n["traffic"]["rx_bytes"]))
+		logf.close()
 
 
 # https://github.com/ffansbach/de-map/blob/master/schema/nodelist-schema-1.0.0.json
