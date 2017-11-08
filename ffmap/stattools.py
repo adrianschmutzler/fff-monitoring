@@ -71,10 +71,19 @@ def record_global_stats(mysql):
 	time = mysql.utcnow()
 	status = router_status(mysql)
 	
-	mysql.execute("""
-		INSERT INTO stats_global (time, clients, online, offline, unknown)
-		VALUES (%s, %s, %s, %s, %s)
-	""",(time,total_clients(mysql),status.get("online",0),status.get("offline",0),status.get("unknown",0),))
+	old = mysql.findone("SELECT time FROM stats_global WHERE time = %s LIMIT 1",(time,))
+	
+	if old:
+		mysql.execute("""
+			UPDATE stats_global
+			SET clients = %s, online = %s, offline = %s, unknown = %s
+			WHERE time = %s
+		""",(total_clients(mysql),status.get("online",0),status.get("offline",0),status.get("unknown",0),time,))
+	else:
+		mysql.execute("""
+			INSERT INTO stats_global (time, clients, online, offline, unknown)
+			VALUES (%s, %s, %s, %s, %s)
+		""",(time,total_clients(mysql),status.get("online",0),status.get("offline",0),status.get("unknown",0),))
 	
 	mysql.execute("""
 		DELETE FROM stats_global

@@ -51,6 +51,7 @@ def import_nodewatcher_xml(mysql, mac, xml):
 	olddata = []
 	uptime = 0
 	events = []
+	status_comment = ""
 	
 	try:
 		cur.execute("SELECT router FROM router_netif WHERE mac = %s LIMIT 1",(mac.lower(),))
@@ -219,10 +220,7 @@ def import_nodewatcher_xml(mysql, mac, xml):
 
 		with suppress(KeyError, TypeError):
 			if olddata["status"] != status:
-				if status_comment:
-					events_append(mysql,router_id,status,status_comment)
-				else:
-					events_append(mysql,router_id,status,"")
+				events_append(mysql,router_id,status,status_comment)
 				#event = {
 				#	"time": utcnow(),
 				#	"type": status,
