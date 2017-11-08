@@ -26,6 +26,7 @@ def register_user(nickname, email, password):
 
 	user_with_nick  = mysql.findone("SELECT id, email FROM users WHERE nickname = %s LIMIT 1",(nickname,))
 	user_with_email  = mysql.findone("SELECT id FROM users WHERE email = %s LIMIT 1",(email,),"id")
+	pw = generate_password_hash(password)
 	if user_with_email:
 		mysql.close()
 		raise AccountWithEmailExists()

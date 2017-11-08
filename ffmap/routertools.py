@@ -66,7 +66,7 @@ def import_nodewatcher_xml(mysql, mac, xml):
 		router_update = parse_nodewatcher_xml(xml)
 
 		# keep hood up to date
-		if not "hood" in router_update:
+		if not router_update["hood"]:
 			# router didn't send his hood in XML
 			lat = router_update.get("lat")
 			lng = router_update.get("lng")
@@ -75,7 +75,7 @@ def import_nodewatcher_xml(mysql, mac, xml):
 				lat = olddata.get("lat")
 				lng = olddata.get("lng")
 			if lat and lng:
-				router_update["hood"] = cur.findone("""
+				router_update["hood"] = mysql.findone("""
 					SELECT name,
 						( acos(  cos( radians(%s) )
 									  * cos_lat

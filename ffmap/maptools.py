@@ -142,7 +142,7 @@ def update_mapnik_csv(mysql):
 		hoods = []
 		for hood in dbhoods:
 			# convert coordinates info marcator sphere as voronoi doesn't work with lng/lat
-			x, y = merc_sphere(hood["lat"], hood["lng"])
+			x, y = merc_sphere(hood["lng"], hood["lat"])
 			hoods.append([x, y])
 		draw_voronoi_lines(csv, hoods)
 
