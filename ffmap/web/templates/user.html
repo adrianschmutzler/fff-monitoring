@@ -62,7 +62,6 @@
 					{%- if user.email %}
 					<tr><th>E-Mail</th><td>
 						{{ user.email|anon_email }}
-						(<a href="{{ url_for('router_list', q='contact:%s' % user.email|anon_email_regex) }}">Filter</a>)
 					</td></tr>
 					{%- endif %}
 					<tr><th>Created</th><td>

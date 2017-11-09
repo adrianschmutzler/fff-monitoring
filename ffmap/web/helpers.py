@@ -50,6 +50,9 @@ def parse_router_list_search_query(args):
 	query_usr = bson.SON()
 	if "q" in args:
 		for word in args["q"].strip().split(" "):
+			if not word:
+				# Case of "q=" without arguments
+				break
 			if not ':' in word:
 				key = "hostname"
 				value = word
@@ -59,26 +62,28 @@ def parse_router_list_search_query(args):
 				query_usr[key] = query_usr.get(key, "") + value
 	query = {}
 	for key, value in query_usr.items():
-		if value == "EXISTS":
-			query[key] = {"$exists": True}
-		elif value == "EXISTS_NOT":
-			query[key] = {"$exists": False}
-		elif key == 'mac':
+		#if value == "EXISTS":
+		#	query[key] = {"$exists": True}
+		#elif value == "EXISTS_NOT":
+		#	query[key] = {"$exists": False}
+		if key == 'mac':
 			query[key] = value.lower()
-		elif key == 'netif':
-			query[key] = {"$regex": value.replace('.', '\.'), "$options": 'i'}
+		#elif key == 'netif':
+		#	query[key] = {"$regex": value.replace('.', '\.'), "$options": 'i'}
 		elif key == 'hostname':
-			query[key] = {"$regex": value.replace('.', '\.'), "$options": 'i'}
+			query[key] = value.replace('\\', '')
 		elif key == 'hardware':
-			query[key] = {"$regex": value.replace('.', '\.').replace('_', ' '), "$options": 'i'}
-		elif key == 'netmon_id':
-			query[key] = int(value)
+			query[key] = value.replace('\\', '').replace('_', ' ')
+		#elif key == 'netmon_id':
+		#	query[key] = int(value)
 		elif key == 'contact':
-			if not '\.' in value:
-				value = re.escape(value)
-			query[key] = {"$regex": value, "$options": 'i'}
-		elif value.startswith('!'):
-			query[key] = {"$ne": value.replace('!', '', 1)}
+			query[key] = value.replace('\\', '')
+		#elif key == 'contact':
+		#	if not '\.' in value:
+		#		value = re.escape(value)
+		#	query[key] = {"$regex": value, "$options": 'i'}
+		#elif value.startswith('!'):
+		#	query[key] = {"$ne": value.replace('!', '', 1)}
 		else:
 			query[key] = value
 	return (query, format_query(query_usr))
