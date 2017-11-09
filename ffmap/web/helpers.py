@@ -88,12 +88,9 @@ def send_email(recipient, subject, content, sender="FFF Monitoring <noreply@moni
 	msg['Subject'] = subject
 	msg['From'] = sender
 	msg['To'] = recipient
-	logf = open("/data/fff/mail.txt", "a")
-	logf.write("{}\n\n".format(msg))
-	logf.close()
-	#s = smtplib.SMTP('localhost')
-	#s.send_message(msg)
-	#s.quit()
+	s = smtplib.SMTP('localhost')
+	s.send_message(msg)
+	s.quit()
 
 def is_authorized(owner, session):
 	if ("user" in session) and (owner == session.get("user")):
