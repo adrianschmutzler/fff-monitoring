@@ -45,7 +45,7 @@
 				<td class="text-nowrap-responsive"><a href="{{ url_for("router_info", dbid=router.id) }}">{{ router.hostname }}</a></td>
 				<td class="text-center"><span class="{{ router.status|status2css }}">{{ router.status }}</span></td>
 				<td>{{ router.hood }}</td>
-				<td>{{ users.get(router.contact,"") }}</td>
+				<td>{{ router.nickname if router.nickname else "" }}</td>
 				<td class="text-nowrap">{{ router.hardware }}</td>
 				<td class="text-nowrap">{{ router.created|utc2local|format_dt_date }}</td>
 				<td class="text-nowrap">{{ router.sys_uptime|format_ts_diff }}</td>

@@ -28,6 +28,24 @@ allowed_filters = (
 	'hostname',
 	'contact',
 )
+
+def query2where(query):
+	s = ""
+	t = []
+	i = 0
+	for k, v in query.items():
+		if not k in allowed_filters:
+			# prevent SQL injection
+			continue
+		if i==0:
+			prefix = " WHERE "
+		else:
+			prefix = " AND "
+		i += 1
+		s += prefix + k + " = %s"
+		t.append(v)
+	return (s,tuple(t))
+
 def parse_router_list_search_query(args):
 	query_usr = bson.SON()
 	if "q" in args:

@@ -44,14 +44,20 @@ def router_map():
 @app.route('/routers')
 def router_list():
 	query, query_str = parse_router_list_search_query(request.args)
+	where, tuple = query2where(query)
 	mysql = FreifunkMySQL()
 	
-	routers = mysql.fetchall("SELECT id, hostname, status, hood, contact, hardware, created, sys_uptime, clients FROM router ORDER BY hostname ASC")
-	users = mysql.fetchdict("SELECT nickname, email FROM users",(),"email","nickname")
+	routers = mysql.fetchall("""
+		SELECT router.id, hostname, status, hood, contact, nickname, hardware, router.created, sys_uptime, clients
+		FROM router
+		LEFT JOIN users ON router.contact = users.email
+		{}
+		ORDER BY hostname ASC
+	""".format(where),tuple)
 	mysql.close()
 	mysql.utcawaretuple(routers,"created")
 	
-	return render_template("router_list.html", query_str=query_str, routers=routers, users=users, numrouters=len(routers))
+	return render_template("router_list.html", query_str=query_str, routers=routers, numrouters=len(routers))
 
 @app.route('/routers/<dbid>', methods=['GET', 'POST'])
 def router_info(dbid):
