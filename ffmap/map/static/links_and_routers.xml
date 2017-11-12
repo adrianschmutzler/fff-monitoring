@@ -5,17 +5,17 @@
 	<Rule>
 	  <Filter>([status] = 'online')</Filter>
 	  <!-- For directed antenna
-		<PointSymbolizer file="static/img/router_direct_green.svg" allow-overlap="true" transform="rotate(45)" />
+		<PointSymbolizer file="img/router_direct_green.svg" allow-overlap="true" transform="rotate(45)" />
 	  -->
-	  <PointSymbolizer file="static/img/router_green.svg" allow-overlap="true" />
+	  <PointSymbolizer file="img/router_green.svg" allow-overlap="true" />
 	</Rule>
 	<Rule>
 	  <Filter>([status] = 'offline')</Filter>
-	  <PointSymbolizer file="static/img/router_red.svg" allow-overlap="true" />
+	  <PointSymbolizer file="img/router_red.svg" allow-overlap="true" />
 	</Rule>
 	<Rule>
 	  <Filter>([status] = 'unknown')</Filter>
-	  <PointSymbolizer file="static/img/router_yellow.svg" allow-overlap="true" />
+	  <PointSymbolizer file="img/router_yellow.svg" allow-overlap="true" />
 	</Rule>
   </Style>
   <Style name="color" filter-mode="first">

@@ -398,15 +398,16 @@ def register_helpers():
 	}
 
 
-if not os.path.isfile("/var/lib/ffmap/secret_key"):
-	open("/var/lib/ffmap/secret_key", "wb").write(os.urandom(24))
-	os.chmod("/var/lib/ffmap/secret_key", 0o600)
-
-app.secret_key = open("/var/lib/ffmap/secret_key", "rb").read()
+#if not os.path.isfile("/var/lib/ffmap/secret_key"):
+#	open("/var/lib/ffmap/secret_key", "wb").write(os.urandom(24))
+#	os.chmod("/var/lib/ffmap/secret_key", 0o600)
+#
+#app.secret_key = open("/var/lib/ffmap/secret_key", "rb").read()
+app.secret_key = "asd"
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', debug=True)
-else:
-	app.template_folder = "/usr/share/ffmap/templates"
-	app.static_folder = "/usr/share/ffmap/static"
-	#app.debug = True
+#else:
+#	app.template_folder = "/usr/share/ffmap/templates"
+#	app.static_folder = "/usr/share/ffmap/static"
+#	#app.debug = True

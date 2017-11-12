@@ -13,7 +13,7 @@ from scipy.spatial import Voronoi
 import urllib.request, json
 
 CONFIG = {
-	"csv_dir": "/var/lib/ffmap/csv"
+	"csv_dir": "/tmp/"
 }
 
 EARTH_RADIUS = 6378137.0
@@ -74,6 +74,7 @@ def draw_voronoi_lines(csv, hoods):
 def update_mapnik_csv(mysql):
 	with open(os.path.join(CONFIG["csv_dir"], "routers.csv"), "w") as csv:
 		csv.write("lng,lat,status\n")
+		print("DONE?!")
 		routers = mysql.fetchall("""
 			SELECT status, lat, lng FROM router
 			WHERE lat IS NOT NULL AND lng IS NOT NULL
@@ -174,9 +175,9 @@ def update_mapnik_csv(mysql):
 		draw_voronoi_lines(csv, hoods)
 
 	# touch mapnik XML files to trigger tilelite watcher
-	touch("/usr/share/ffmap/hoods.xml")
-	touch("/usr/share/ffmap/hoodsv2.xml")
-	touch("/usr/share/ffmap/links_and_routers.xml")
+	#touch("/usr/share/ffmap/hoods.xml")
+	#touch("/usr/share/ffmap/hoodsv2.xml")
+	#touch("/usr/share/ffmap/links_and_routers.xml")
 
 if __name__ == '__main__':
 	update_mapnik_csv()

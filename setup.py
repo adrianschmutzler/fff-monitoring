@@ -1,22 +1,31 @@
 #!/usr/bin/python3
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
-setup(                                                                                                                                         
+setup(
 	name='ffmap',
-	version='0.0.1',
+	version='0.0.2',
 	license='GPL',
-	description='FF-MAP',
+	description='FFF-MAP',
 	author='Dominik Heidler',
 	author_email='dominik@heidler.eu',
 	url='http://github.com/asdil12/ff-map',
-	#requires=['flask', 'flup'],
-	packages=['ffmap', 'ffmap.web'],
-	#scripts=['bin/aurbs'],
-	#data_files=[
-	#	('/etc', ['templates/aurbs.yml']),
-	#	('/usr/share/aurbs/cfg', ['templates/gpg.conf']),
-	#	('/usr/share/doc/aurbs', ['templates/lighttpd.conf.sample']),
-	#],
+	packages=find_packages(),  
+	include_package_data=True,  
+	install_requires=[  
+		"flask",  
+		"requests",  
+		"lxml",  
+		"python-dateutil",  
+		"numpy",  
+		"scipy",  
+		"tilestache",  
+		"pymongo",  
+	],  
+	entry_points={  
+		'console_scripts': [  
+			'ffmap = ffmap.__main__:main',  
+		],  
+	},  
 )
 

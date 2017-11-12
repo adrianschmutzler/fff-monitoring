@@ -5,11 +5,11 @@ mkdir -vp /var/lib/ffmap/csv
 chown -R www-data:www-data /var/lib/ffmap
 
 mkdir -vp /usr/share/ffmap
-cp -v ffmap/mapnik/{hoods,hoodsv2,links_and_routers}.xml /usr/share/ffmap
+cp -v ffmap/map/static/{hoods,hoodsv2,links_and_routers}.xml /usr/share/ffmap
 sed -i -e 's#>csv/#>/var/lib/ffmap/csv/#' /usr/share/ffmap/{hoods,hoodsv2,links_and_routers}.xml
 chown www-data:www-data /usr/share/ffmap/{hoods,hoodsv2,links_and_routers}.xml
 
-cp -v ffmap/mapnik/tilestache.cfg /usr/share/ffmap
+#cp -v ffmap/mapnik/tilestache.cfg /usr/share/ffmap
 cp -rv ffmap/web/static /usr/share/ffmap
 cp -rv ffmap/web/templates /usr/share/ffmap
 
@@ -21,4 +21,4 @@ systemctl daemon-reload
 
 python3 setup.py install --force
 
-(cd ffmap/mapnik; python2 setup.py install)
+#(cd ffmap/mapnik; python2 setup.py install)
