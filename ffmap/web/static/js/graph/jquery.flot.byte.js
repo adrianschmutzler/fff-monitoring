@@ -97,7 +97,7 @@
 				else if (opts.mode === "bit" || opts.mode === "bitRate") {
 					axis.tickGenerator = function (axis) {
 						var returnTicks = [],
-							tickSize = 2,
+							tickSize = 5,
 							delta = axis.delta,
 							steps = 0,
 							tickMin = 0,
@@ -127,7 +127,7 @@
 							if (delta <= tickSize) {
 								break;
 							}
-							tickSize *= 2;
+							tickSize *= 10;
 						}
 
 						//Tell flot the tickSize we've calculated
