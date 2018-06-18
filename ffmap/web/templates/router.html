@@ -160,6 +160,7 @@
 						</td></tr>
 						{%- endif %}
 						<tr><th>User</th><td>
+						{%- if authadmin -%}
 						{%- if router.user -%}
 						<a href="{{ url_for('user_info', nickname=router.user) }}">{{ router.user }}</a>
 						{%- if router.contact %}
@@ -171,6 +172,9 @@
 						{%- else -%}
 						<span style="color:#d90000">FFF routers must have a contact address, but none is set.<br />Please provide a valid e-mail address!</span>
 						{%- endif -%}
+						{%- endif -%}
+						{%- else -%}
+						---
 						{%- endif -%}
 						</td></tr>
 						<tr><th>Hardware</th><td><span title="{{ router.chipset }}"><a href="{{ url_for('router_list', q='hardware:^%s$' % router.hardware|format_query) }}">{{ router.hardware }}</a></span></td></tr>

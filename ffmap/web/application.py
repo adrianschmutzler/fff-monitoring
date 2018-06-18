@@ -70,7 +70,7 @@ def router_list():
 	routers = mysql.utcawaretuple(routers,"created")
 	routers = mysql.utcawaretuple(routers,"last_contact")
 	
-	return render_template("router_list.html", query_str=query_str, routers=routers, numrouters=len(routers))
+	return render_template("router_list.html", query_str=query_str, routers=routers, numrouters=len(routers), authadmin = session.get('admin'))
 
 # test
 @app.route('/v2routers')
