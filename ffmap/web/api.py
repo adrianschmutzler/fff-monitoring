@@ -163,6 +163,10 @@ def alfred():
 				writefulllog("Warning: Error converting ALFRED data to JSON:\n__%s" % (request.get_data(True,True).replace("\n", "\n__")))
 				r.headers['X-API-STATUS'] = "JSON parsing failed"
 				return r
+			#writelog(CONFIG["debug_dir"] + "/e1.txt", "%s" % (request.environ['REMOTE_ADDR']))
+			#writelog(CONFIG["debug_dir"] + "/e1.txt", "%s - %d chars - %s" % (request.environ['REMOTE_ADDR'],len(str(alfred_data)),alfred_data))
+			writelog(CONFIG["debug_dir"] + "/e2.txt", "%s - %d chars" % (request.environ['REMOTE_ADDR'],len(str(alfred_data))))
+			writelog(CONFIG["debug_dir"] + "/e2.txt", "")
 
 			if alfred_data:
 				# load router status xml data
@@ -216,6 +220,8 @@ def alfred2():
 				writefulllog("Warning: Error converting ALFRED2 data to JSON:\n__%s" % (request.get_data(True,True).replace("\n", "\n__")))
 				r.headers['X-API-STATUS'] = "JSON parsing failed"
 				return r
+			writelog(CONFIG["debug_dir"] + "/e3.txt", "%s - %d chars" % (request.environ['REMOTE_ADDR'],len(str(alfred_data))))
+			writelog(CONFIG["debug_dir"] + "/e3.txt", "")
 
 			if alfred_data:
 				# load router status xml data
