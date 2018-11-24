@@ -261,7 +261,7 @@ def update_mapnik_csv(mysql):
 		draw_voronoi_lines(csv, hoods)
 
 	# Poly-Hoods
-	with urllib.request.urlopen("http://keyserver.freifunk-franken.de/v2/hoods.php") as url:
+	with urllib.request.urlopen("https://lauch.org/keyxchange/hoods.php") as url:
 		dbhoodspoly = json.loads(url.read().decode())
 	with open(os.path.join(CONFIG["csv_dir"], "hood-points-poly.csv"), "w", encoding="UTF-8") as csv:
 		csv.write("lng,lat,name\n")
